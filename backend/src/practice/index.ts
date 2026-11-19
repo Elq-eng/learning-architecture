@@ -1,0 +1,3 @@
+// Public entry point of the Practice bounded context.
+// Other contexts and infrastructure import only from this file.
+export {};

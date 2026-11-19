@@ -128,12 +128,13 @@ Regla práctica: si puedes explicarle una regla a un estudiante o a un editor de
 
 | Evento | Lo emite | Lo consumen | Efecto |
 | --- | --- | --- | --- |
-| LeccionCompletada | Aprendizaje | Aprendizaje, Contenido | Actualiza el avance y desbloquea el siguiente tema |
+| LeccionCompletada | Aprendizaje | Aprendizaje | Actualiza el avance y desbloquea el siguiente tema (el desbloqueo depende del avance de cada estudiante, por eso no lo consume Contenido) |
 | KataEnviada | Practica | Practica | Dispara la ejecución de las pruebas |
 | KataAprobada | Practica | Aprendizaje | Marca la kata como completada |
 | DecisionRegistrada | DisenoArquitectonico | Aprendizaje | Suma al avance del módulo de fundamentos |
 | RiesgoIdentificado | DisenoArquitectonico | Aprendizaje | Suma al avance del módulo de diseño |
-| ContenidoPublicado | Contenido | Aprendizaje | Actualiza la ruta con la nueva versión |
+| ContenidoPublicado | Contenido | Aprendizaje, Practica | Actualiza la ruta con la nueva versión; Practica registra su copia de los ejercicios de modelado |
+| EjercicioDeModeladoAprobado | Practica | Aprendizaje | Completa el tema de práctica del módulo de DDD |
 
 ### 4.4 Reglas de negocio por agregado
 
@@ -142,10 +143,10 @@ Son el punto de partida, derivadas de las historias. Cada regla debe tener una p
 | Contexto | Agregado | Reglas (invariantes) |
 | --- | --- | --- |
 | Contenido | Leccion | Una lección publicada no se modifica: editarla crea una versión nueva. Una lección despublicada deja de aparecer para los estudiantes, pero conserva su historial. |
-| Contenido | Modulo | Los temas tienen un orden único. Un prerrequisito debe ser un tema anterior del mismo módulo y no puede formar ciclos. |
+| Contenido | Modulo | Los temas tienen un orden único. Un prerrequisito debe ser un tema anterior del mismo módulo y no puede formar ciclos. No hay prerrequisitos entre módulos. Cada tema tiene una condición de completado: aprobar su autoevaluación o que ocurra un evento concreto. |
 | Contenido | Kata | Tiene al menos una prueba, un principio o patrón asociado y una solución de referencia. |
 | Aprendizaje | PlanDeEstudio | Un tema está bloqueado hasta que su prerrequisito esté completado. |
-| Aprendizaje | Avance | Una lección se completa al aprobar su autoevaluación (70 % de aciertos por defecto). Completar dos veces lo mismo no cambia el avance. El avance de un módulo es temas completados dividido por temas publicados y no baja por completar más. |
+| Aprendizaje | Avance | Una lección se completa al aprobar su autoevaluación (70 % de aciertos por defecto). Completar dos veces lo mismo no cambia el avance. El avance de un módulo es temas completados dividido por temas publicados y no baja por completar más. Un tema bloqueado no se puede completar. Un tema cuya condición es un evento se completa al recibirlo; si el evento ocurrió mientras el tema estaba bloqueado, se completa al desbloquearse. El mismo evento dos veces no cambia nada. |
 | Practica | Envio | Un envío pertenece a una kata y a un estudiante. Queda aprobado solo si pasan todas las pruebas. La ejecución tiene límite de tiempo y no tiene acceso a red. La solución de referencia solo se revela tras al menos un envío. |
 | DisenoArquitectonico | Proyecto | Los atributos de calidad priorizados no repiten posición. Un artefacto (ADR, riesgo, escenario, diagrama) pertenece a un solo proyecto. |
 | DisenoArquitectonico | EscenarioDeCalidad | Exige los seis campos (fuente, estímulo, entorno, artefacto, respuesta, medida) y la medida debe ser comprobable. Un escenario sin ninguna decisión que lo cubra se marca como hueco. |
@@ -154,7 +155,7 @@ Son el punto de partida, derivadas de las historias. Cada regla debe tener una p
 | DisenoArquitectonico | TableroDeEventos | Un evento se nombra en pasado. Cada comando indica qué agregado lo maneja y qué evento produce. |
 | DisenoArquitectonico | MapaDeContextos | Una relación une dos contextos distintos y tiene un tipo (proveedor-consumidor, capa anticorrupción o núcleo compartido). |
 | DisenoArquitectonico | Glosario | Un término tiene una sola definición por contexto. Si el mismo término tiene definiciones distintas en dos contextos, se señala. |
-| Practica | Ejercicio de modelado | Un ejercicio se aprueba cuando la clasificación del estudiante coincide con la de referencia y la razón es válida. |
+| Practica | Ejercicio de modelado | Un ejercicio se aprueba cuando la clasificación del estudiante coincide con la de referencia y la razón es válida. Un intento evaluado no cambia. La aprobación se anuncia una sola vez por estudiante y ejercicio. |
 | Identidad | Usuario | Rol Estudiante, Mentor o Editor. El Mentor comenta pero no modifica los artefactos del estudiante. Un estudiante solo ve sus propios proyectos, salvo que los comparta. |
 
 ### 4.5 Dónde va en el código
@@ -224,7 +225,7 @@ Prioridad: **Must** (imprescindible), **Should** (importante), **Could** (deseab
 
 ### Épica 1: Fundamentos de la arquitectura de software
 
-**US-1.1 (Must)** Como estudiante, quiero ver una ruta de aprendizaje con los tres módulos del temario para saber qué estudiar y en qué orden.
+**US-1.1 (Must)** Como estudiante, quiero ver una ruta de aprendizaje con los tres módulos del temario y el módulo transversal de DDD para saber qué estudiar y en qué orden.
 - Los módulos y temas aparecen en orden.
 - Los temas bloqueados indican su prerrequisito.
 - El avance se muestra por módulo.

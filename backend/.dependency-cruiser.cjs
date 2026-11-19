@@ -52,6 +52,13 @@ module.exports = {
       to: { path: SRC, pathNot: `${SRC}shared-kernel/` },
     },
     {
+      name: 'platform-is-independent',
+      comment: 'Shared technical adapters (ADR-0004) depend only on the shared kernel and libraries.',
+      severity: 'error',
+      from: { path: `${SRC}platform/` },
+      to: { path: SRC, pathNot: [`${SRC}platform/`, `${SRC}shared-kernel/`] },
+    },
+    {
       name: 'infrastructure-is-outermost',
       comment: 'Only infrastructure may import infrastructure.',
       severity: 'error',
